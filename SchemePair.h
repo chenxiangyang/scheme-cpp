@@ -12,6 +12,17 @@ public:
 
     SchemeValue_p car();
     SchemeValue_p cdr();
+    bool is_pair() override{return true;}
+
+
+    std::string to_string() override
+    {
+        if(m_value->is_pair())
+        {
+            return std::string("(") + m_value->to_string() + ") " + m_next->to_string();
+        }
+        return m_value->to_string() + " " + m_next->to_string();
+    }
 
 private:
     SchemeValue_p m_next;

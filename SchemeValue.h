@@ -14,6 +14,8 @@ public:
     virtual bool is_boolean(){return false;}
     virtual bool is_produce(){return false;}
     virtual bool is_nil(){return false;}
+
+    virtual std::string to_string() = 0;
 };
 
 class SchemeNil: public SchemeValue
@@ -22,6 +24,11 @@ public:
     bool is_nil() override
     {
         return true;
+    }
+
+    std::string to_string() override
+    {
+        return "nil";
     }
 };
 

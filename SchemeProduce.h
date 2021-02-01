@@ -5,6 +5,7 @@
 class SchemeProduce: public SchemeValue
 {
 public:
+    bool is_produce(){return true;}
     virtual SchemeValue_p apply(SchemeValue_p params, Frame_p env) = 0;
 };
 

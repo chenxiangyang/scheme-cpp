@@ -7,6 +7,12 @@ class SchemeSymbol: public SchemeValue
 public:
     SchemeSymbol(std::string symbol);
     bool is_symbol(){return true;}
+
+    std::string to_string() override
+    {
+        return m_symbol;
+    }
+
 private:
     std::string m_symbol;
 };
