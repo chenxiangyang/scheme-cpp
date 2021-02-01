@@ -16,6 +16,12 @@ public:
     virtual bool is_nil(){return false;}
 
     virtual std::string to_string() = 0;
+
+    template <typename T>
+    T toType()
+    {
+        return dynamic_cast<T>(this);
+    }
 };
 
 class SchemeNil: public SchemeValue
@@ -34,5 +40,11 @@ public:
 
 typedef std::shared_ptr<SchemeValue> SchemeValue_p;
 SchemeValue_p nil();
+
+template<typename T1, typename T2>
+T1* toType(T2 obj)
+{
+
+}
 
 #endif

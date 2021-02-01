@@ -13,6 +13,11 @@ public:
         return m_symbol;
     }
 
+    std::string value()
+    {
+        return m_symbol;
+    }
+
 private:
     std::string m_symbol;
 };
