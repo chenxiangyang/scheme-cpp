@@ -23,6 +23,8 @@ public:
         }
         return m_value->to_string() + " " + m_next->to_string();
     }
+    size_t count();
+    bool is_list() override;
 
 private:
     SchemeValue_p m_next;

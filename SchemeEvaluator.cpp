@@ -1,13 +1,22 @@
+#include <vector>
+#include <algorithm>
 #include "SchemeEvaluator.h"
 #include "SchemeProduce.h"
 #include "SchemeSymbol.h"
 #include "SchemePair.h"
+#include "SchemeLambda.h"
 #include "produces/SchemeAdd.h"
+
+std::vector<std::string> raw_func_name_list = {
+    "define","lambda"
+};
 
 SchemeEvaluator::SchemeEvaluator()
 {
-    m_global = create_global_frame();
+    m_global = create_frame();
+
     m_global->set_env("define", SchemeValue_p(new SchemeDefine(m_global)));
+    m_global->set_env("lambda", SchemeValue_p(new SchemeLambda(m_global)));
     m_global->set_env("+", SchemeValue_p(new SchemeAdd(m_global)));
     m_global->set_env("-", SchemeValue_p(new SchemeSub(m_global)));
 }
@@ -20,6 +29,15 @@ SchemeValue_p SchemeEvaluator::eval(SchemeValue_p expr, Frame_p env)
 SchemeValue_p SchemeEvaluator::eval(SchemeValue_p expr)
 {
     return ::eval(expr, m_global);
+}
+
+bool is_raw_func(SchemeValue_p sym)
+{
+    if(!sym->is_symbol())
+        return false;
+    std::string name = sym->toType<SchemeSymbol*>()->value();
+    auto itor = std::find(raw_func_name_list.begin(), raw_func_name_list.end(), name);
+    return !(itor==raw_func_name_list.end());
 }
 
 SchemeValue_p eval(SchemeValue_p expr, Frame_p env)
@@ -36,9 +54,33 @@ SchemeValue_p eval(SchemeValue_p expr, Frame_p env)
         auto next = cdr(expr);
 
         auto sc_op = eval(first, env);
+
+        auto is_raw= is_raw_func(first);
+        auto params = next;
+        if(!is_raw)
+        {
+            if(!next->is_list() && !next->is_nil())
+                throw std::runtime_error(std::string("param is not list or nil:")+next->to_string());
+
+            params = eval_params(next, env);
+        }
+
         if(sc_op->is_produce())
         {
-            return sc_op->toType<SchemeProduce*>()->apply(next);
+            return sc_op->toType<SchemeProduce*>()->apply(params, env);
         }
     }
+    throw std::runtime_error(std::string("unknown expr:")+expr->to_string());
+}
+
+SchemeValue_p eval_params(SchemeValue_p params, Frame_p env)
+{
+
+    if(params->is_nil())
+        return nil();
+
+    auto first = car(params);
+    auto rest = cdr(params);
+
+    return cons(eval(first, env), eval_params(rest, env));
 }

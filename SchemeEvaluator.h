@@ -13,5 +13,7 @@ public:
 };
 
 SchemeValue_p eval(SchemeValue_p expr, Frame_p env);
+SchemeValue_p eval_params(SchemeValue_p params, Frame_p env);
+SchemeValue_p apply(SchemeValue_p op, SchemeValue_p param, Frame_p env);
 
 #endif

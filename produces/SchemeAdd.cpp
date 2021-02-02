@@ -2,7 +2,7 @@
 #include "../SchemeEvaluator.h"
 #include "../SchemePair.h"
 #include "../SchemeNumber.h"
-SchemeValue_p SchemeAdd::apply(SchemeValue_p params)
+SchemeValue_p SchemeAdd::apply(SchemeValue_p params, Frame_p env)
 {
     float sum = 0.0;
 
@@ -26,7 +26,7 @@ SchemeValue_p SchemeAdd::apply(SchemeValue_p params)
     return std::make_shared<SchemeFloat>(sum);
 }
 
-SchemeValue_p SchemeSub::apply(SchemeValue_p params)
+SchemeValue_p SchemeSub::apply(SchemeValue_p params, Frame_p env)
 {
     float sum = 0.0;
 

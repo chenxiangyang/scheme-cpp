@@ -14,6 +14,7 @@ public:
     virtual bool is_boolean(){return false;}
     virtual bool is_produce(){return false;}
     virtual bool is_nil(){return false;}
+    virtual bool is_list(){return false;}
 
     virtual std::string to_string() = 0;
 

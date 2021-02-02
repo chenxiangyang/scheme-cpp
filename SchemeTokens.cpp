@@ -49,7 +49,7 @@ SchemeValue_p get_item(SchemeTokens_p t)
 {
     std::string token = t->get_token();
 
-    std::cout<<"token:"<<token<<std::endl;
+    //std::cout<<"token:"<<token<<std::endl;
 
     if(token.empty())
     {
@@ -61,7 +61,7 @@ SchemeValue_p get_item(SchemeTokens_p t)
     {
         SchemeValue_p ret = get_item(t);
         std::string tail = t->get_token();
-        std::cout<<"tail:"<<tail<<std::endl;
+        //std::cout<<"tail:"<<tail<<std::endl;
         if(tail == ")")
             return cons(ret, get_item(t));
         else
