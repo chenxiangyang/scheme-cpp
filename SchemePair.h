@@ -29,6 +29,16 @@ private:
     SchemeValue_p m_value;
 };
 
+inline SchemeValue_p car(SchemeValue_p p)
+{
+    return p->toType<SchemePair*>()->car();
+}
+
+inline SchemeValue_p cdr(SchemeValue_p p)
+{
+    return p->toType<SchemePair*>()->cdr();
+}
+
 SchemeValue_p cons(SchemeValue_p first, SchemeValue_p second);
 
 #endif

@@ -8,6 +8,7 @@ class Frame
 public:
     Frame();
     void set_env(std::string k, SchemeValue_p value);
+    SchemeValue_p get(std::string k);
 private:
     std::map<std::string, SchemeValue_p> m_env;
 };

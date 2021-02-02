@@ -18,7 +18,7 @@ public:
         std::sprintf(buff,"%f",m_value);
         return std::string(buff);
     }
-private:
+public:
     float m_value;
 };
 
@@ -33,8 +33,18 @@ public:
         std::sprintf(buff,"%d",m_value);
         return std::string(buff);
     }
-private:
+public:
     int m_value;
 };
+
+inline SchemeValue_p scint(int value)
+{
+    return std::make_shared<SchemeInteger>(value);
+}
+
+inline SchemeValue_p scfloat(float value)
+{
+    return std::make_shared<SchemeFloat>(value);
+}
 
 #endif
