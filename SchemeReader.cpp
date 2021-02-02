@@ -1,25 +1,29 @@
 #include "SchemeReader.h"
-
+#include <iostream>
 SchemeReader::SchemeReader(std::function<char ()> char_reader)
 {
     m_get_char_func = char_reader;
-    parse();
 }
 
 SchemeReader::SchemeReader()
 {
     m_get_char_func = std::getchar;
-    parse();
 }
 
 //a-zA-Z0-9.*!#$%^&*<>/+-_?'
 std::string SchemeReader::get_next()
 {
-    if(m_cached.size())
+    while(1)
     {
-        std::string ret = m_cached.front();
-        m_cached.pop_front();
-        return ret;
+        if(m_cached.size())
+        {
+            std::string ret = m_cached.front();
+            m_cached.pop_front();
+            return ret;
+        }
+        parse();
+        if(m_cached.size()==0)
+            return "";
     }
     return "";
 }
@@ -39,19 +43,25 @@ void SchemeReader::parse()
         if(c == '(' || c==')')
         {
             m_cached.push_back(char_to_string(c));
-            continue;
+            break;
         }
-        if(c == ' ')
+        if(c == ' ' || c==0x0a)
         {
             continue;
         }
         if(c == 0)
             break;
         if(c == '\"')
+        {
             m_cached.push_back(get_string());
+            break;
+        }
 
         revert_char(c);
-        m_cached.push_back(get_symbol());
+        auto t = get_symbol();
+        //std::cout<<t<<std::endl;
+        m_cached.push_back(t);
+        break;
     }
 }
 
@@ -82,7 +92,7 @@ std::string SchemeReader::get_symbol()
             revert_char(c);
             break;
         }
-        if(c==' ')
+        if(c==' ' || c==0x0a)
             break;
 
         tmp.push_back(c);

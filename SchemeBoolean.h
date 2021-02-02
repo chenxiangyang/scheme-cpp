@@ -11,6 +11,11 @@ public:
             return "#t";
         return "#f";
     }
+    bool is_boolean() override
+    {
+        return true;
+    }
+
     static SchemeValue* sc_true();
     static SchemeValue* sc_false();
 private:

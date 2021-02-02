@@ -45,8 +45,6 @@ void test_eval()
     auto token = std::make_shared<SchemeTokens>(reader);
 
     auto tree = get_line(token);
-    std::cout<<tree->to_string()<<std::endl;
-
     SchemeEvaluator e;
     auto result = e.eval(tree);
     std::cout<<result->to_string()<<std::endl;
@@ -145,15 +143,40 @@ void test_lambda3()
     std::cout<<result->to_string()<<std::endl;
 }
 
+void read_exec_loop()
+{
+    std::cout<<"scheme"<<std::endl;
+    auto reader = std::make_shared<SchemeReader>(std::getchar);
+
+    auto token = std::make_shared<SchemeTokens>(reader);
+    SchemeEvaluator e;
+
+    while(1)
+    {
+        try{
+            std::cout<<"scm>";
+            auto first = get_line(token);
+            //std::cout<<first->to_string()<<std::endl;
+            auto result = e.eval(first);
+            std::cout<<result->to_string()<<std::endl;
+        }
+        catch(std::exception& e)
+        {
+            std::cout<<e.what()<<std::endl;
+        }
+    }
+}
+
 int main(int argc, char* argv[])
 {
-    test_reader();
-    test_token();
-    test_eval();
-    test_eval_def();
-    test_lambda();
-    test_lambda2();
-    test_lambda3();
+    //test_reader();
+    //test_token();
+    //test_eval();
+    //test_eval_def();
+    //test_lambda();
+    //test_lambda2();
+    //test_lambda3();
+    read_exec_loop();
     std::cout<<"scheme start"<<std::endl;
     return 0;
 }

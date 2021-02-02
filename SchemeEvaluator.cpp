@@ -6,9 +6,10 @@
 #include "SchemePair.h"
 #include "SchemeLambda.h"
 #include "produces/SchemeAdd.h"
+#include "produces/SchemeIf.h"
 
 std::vector<std::string> raw_func_name_list = {
-    "define","lambda"
+    "define","lambda","if"
 };
 
 SchemeEvaluator::SchemeEvaluator()
@@ -17,6 +18,7 @@ SchemeEvaluator::SchemeEvaluator()
 
     m_global->set_env("define", SchemeValue_p(new SchemeDefine(m_global)));
     m_global->set_env("lambda", SchemeValue_p(new SchemeLambda(m_global)));
+    m_global->set_env("if", SchemeValue_p(new SchemeIf(m_global)));
     m_global->set_env("+", SchemeValue_p(new SchemeAdd(m_global)));
     m_global->set_env("-", SchemeValue_p(new SchemeSub(m_global)));
 }

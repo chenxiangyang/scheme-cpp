@@ -66,7 +66,7 @@ SchemeValue_p get_item(SchemeTokens_p t)
             return cons(ret, get_item(t));
         else
         {
-            std::cout<<ret->to_string()<<std::endl;
+            //std::cout<<ret->to_string()<<std::endl;
             throw std::runtime_error(std::string("invalid tail:")+tail);
         }
     }
@@ -77,6 +77,7 @@ SchemeValue_p get_item(SchemeTokens_p t)
         return nil();
     }
 
+    //return get_value_from_string(token);
     return cons(get_value_from_string(token), get_item(t));
 }
 
@@ -92,11 +93,8 @@ SchemeValue_p get_line(SchemeTokens_p t)
         else
             throw std::runtime_error("");
     }
-    t->revert(token);
-    return get_item(t);
+    return get_value_from_string(token);
 }
-
-
 
 SchemeTokens::SchemeTokens(SchemeReader_p reader)
 {
