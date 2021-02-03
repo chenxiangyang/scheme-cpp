@@ -32,6 +32,9 @@ SchemeEvaluator::SchemeEvaluator()
     m_global->set_env("cdr", SchemeValue_p(new SchemeCommonProduce(produce_cdr,m_global)));
     m_global->set_env("quote", SchemeValue_p(new SchemeCommonProduce(produce_quote,m_global)));
     m_global->set_env("eval", SchemeValue_p(new SchemeCommonProduce(produce_eval,m_global)));
+    m_global->set_env("env", SchemeValue_p(new SchemeCommonProduce(produce_show_env,m_global)));
+    m_global->set_env("begin", SchemeValue_p(new SchemeCommonProduce(produce_begin,m_global)));
+    m_global->set_env("display", SchemeValue_p(new SchemeCommonProduce(produce_display,m_global)));
 }
 
 SchemeValue_p SchemeEvaluator::eval(SchemeValue_p expr, Frame_p env)
@@ -93,6 +96,8 @@ SchemeValue_p eval_params(SchemeValue_p params, Frame_p env)
 
     auto first = car(params);
     auto rest = cdr(params);
+    auto result_first = eval(first, env);
+    auto result_rest = eval_params(rest, env);
 
-    return cons(eval(first, env), eval_params(rest, env));
+    return cons(result_first, result_rest);
 }

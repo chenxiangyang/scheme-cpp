@@ -9,6 +9,10 @@ public:
     bool is_produce(){return true;}
     std::string to_string() override{return "produce";}
     virtual SchemeValue_p apply(SchemeValue_p params, Frame_p env) = 0;
+    Frame_p env()
+    {
+        return m_env;
+    }
 protected:
     Frame_p m_env;
 };

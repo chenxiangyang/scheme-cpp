@@ -26,7 +26,7 @@ SchemeValue_p SchemeLambdaExpr::apply(SchemeValue_p params, Frame_p env)
     auto param_env = m_env->create_child();
     auto formal_params = m_formal_parameters;
 
-    if(!params->is_list())
+    if(!params->is_list() && !params->is_nil())
         throw std::runtime_error(std::string("params is not list"));
 
     while(1)

@@ -19,5 +19,8 @@ SchemeValue_p produce_car(SchemeValue_p param,Frame_p env,Frame_p func_env);
 SchemeValue_p produce_cdr(SchemeValue_p param,Frame_p env,Frame_p func_env);
 SchemeValue_p produce_quote(SchemeValue_p param,Frame_p env,Frame_p func_env);
 SchemeValue_p produce_eval(SchemeValue_p param,Frame_p env,Frame_p func_env);
+SchemeValue_p produce_show_env(SchemeValue_p param,Frame_p env,Frame_p func_env);
+SchemeValue_p produce_begin(SchemeValue_p param,Frame_p env,Frame_p func_env);
+SchemeValue_p produce_display(SchemeValue_p param,Frame_p env,Frame_p func_env);
 
 #endif

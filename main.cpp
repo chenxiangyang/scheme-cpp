@@ -192,6 +192,35 @@ void test_quote()
     result = e.eval(third);
     std::cout<<result->to_string()<<std::endl;
 }
+
+
+void test_show_env()
+{
+    std::cout<<"test_show-env"<<std::endl;
+    auto reader = std::make_shared<SchemeReader>([](){
+        static char test_exp[]=
+                "(define (func x y)"
+                " (begin"
+                "  (define z 10)"
+                "  (define u 20)"
+                "  (env)"
+                "  (lambda () (+ x y z u))))"
+                "(func 10 20)";
+        static int index = 0;
+        return test_exp[index++];
+    });
+
+    auto token = std::make_shared<SchemeTokens>(reader);
+    SchemeEvaluator e;
+
+    auto first = get_line(token);
+    auto result = e.eval(first);
+
+    auto second = get_line(token);
+    result = e.eval(second);
+    std::cout<<result->to_string()<<std::endl;
+}
+
 void read_exec_loop()
 {
     std::cout<<"scheme"<<std::endl;
@@ -225,8 +254,9 @@ int main(int argc, char* argv[])
     //test_lambda();
     //test_lambda2();
     //test_lambda3();
-    test_lambda4();
-    test_quote();
+    //test_lambda4();
+    //test_quote();
+    test_show_env();
     read_exec_loop();
     std::cout<<"scheme start"<<std::endl;
     return 0;

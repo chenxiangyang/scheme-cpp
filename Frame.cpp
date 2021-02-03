@@ -1,7 +1,5 @@
 #include "Frame.h"
 
-
-
 Frame_p create_frame()
 {
     return std::make_shared<Frame>();
@@ -49,4 +47,19 @@ Frame_p Frame::create_child()
     auto child = std::make_shared<Frame>();
     child->m_parent = this->getptr();
     return child;
+}
+
+std::string Frame::to_string(bool recursive)
+{
+    std::string result="{";
+    for(auto itor:m_env)
+    {
+        result+="[";
+        result+=itor.first;
+        result+="]";
+    }
+    result+="}";
+    if(m_parent)
+        result += m_parent->to_string(recursive);
+    return result;
 }

@@ -14,6 +14,8 @@ public:
 
     Frame_p getptr();
     Frame_p create_child();
+
+    std::string to_string(bool recursive);
 private:
     std::map<std::string, SchemeValue_p> m_env;
     Frame_p m_parent;

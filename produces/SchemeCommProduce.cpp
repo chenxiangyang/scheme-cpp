@@ -2,6 +2,7 @@
 #include "SchemeCommProduce.h"
 #include "../SchemePair.h"
 #include "../SchemeEvaluator.h"
+#include "../SchemeString.h"
 SchemeValue_p SchemeCommonProduce::apply(SchemeValue_p params, Frame_p env)
 {
     return m_func(params, env, m_env);
@@ -48,4 +49,52 @@ SchemeValue_p produce_eval(SchemeValue_p param, Frame_p env, Frame_p func_env)
     //if(!param->is_list() || cdr(param)==nil())
     //    throw std::runtime_error(std::string("invalid eval params:")+param->to_string());
     return eval(car(param), env);
+}
+
+SchemeValue_p produce_show_env(SchemeValue_p param, Frame_p env, Frame_p func_env)
+{
+    if(param->is_nil())
+    {
+        std::string str("func env:");
+        str+=func_env->to_string(true);
+        str+="\ncurrent env:";
+        str+=env->to_string(true);
+        auto result = std::make_shared<SchemeString>(str);
+        //std::cout<<str<<std::endl;
+        return result;
+    }
+    else if(param->is_list() && cdr(param)==nil())
+    {
+        auto func = car(param);
+        if(!func->is_produce())
+            throw std::runtime_error(std::string("param is not a produce:")+func->to_string());
+
+        auto produce = func->toType<SchemeProduce*>();
+        auto env = produce->env();
+        std::string str = func->to_string();
+        str += " env:";
+        str += env->to_string(true);
+        //std::cout<<str<<std::endl;
+        return std::make_shared<SchemeString>(str);
+    }
+    throw std::runtime_error(std::string("invalid show_env param:")+param->to_string());
+}
+
+SchemeValue_p produce_begin(SchemeValue_p param, Frame_p env, Frame_p func_env)
+{
+    if(!param->is_list())
+        throw std::runtime_error(std::string("invalid begin param:")+param->to_string());
+
+    while(1)
+    {
+        if(cdr(param)==nil())
+            return car(param);
+        param = cdr(param);
+    }
+}
+
+SchemeValue_p produce_display(SchemeValue_p param, Frame_p env, Frame_p func_env)
+{
+    std::cout<<car(param)->to_string()<<std::endl;
+    return nil();
 }

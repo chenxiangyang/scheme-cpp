@@ -14,7 +14,7 @@ SchemeValue_p SchemeDefine::apply(SchemeValue_p params, Frame_p env)
     if(first->is_symbol())
     {
         auto symbol = first->toType<SchemeSymbol*>();
-        m_env->set_env(symbol->value(), eval(rest->toType<SchemePair*>()->car(), m_env));
+        env->set_env(symbol->value(), eval(rest->toType<SchemePair*>()->car(), env));
     }
     else if(first->is_list())
     {
@@ -24,7 +24,7 @@ SchemeValue_p SchemeDefine::apply(SchemeValue_p params, Frame_p env)
         auto expr = cons(std::make_shared<SchemeSymbol>("lambda"),cons(formal_params, rest));
 
         auto symbol = func_name->toType<SchemeSymbol*>();
-        m_env->set_env(symbol->value(), eval(expr, m_env));
+        env->set_env(symbol->value(), eval(expr, env));
     }
 
     return nil();
