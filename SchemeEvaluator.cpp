@@ -7,6 +7,7 @@
 #include "SchemeLambda.h"
 #include "produces/SchemeAdd.h"
 #include "produces/SchemeIf.h"
+#include "produces/SchemeCompare.h"
 
 std::vector<std::string> raw_func_name_list = {
     "define","lambda","if"
@@ -21,6 +22,10 @@ SchemeEvaluator::SchemeEvaluator()
     m_global->set_env("if", SchemeValue_p(new SchemeIf(m_global)));
     m_global->set_env("+", SchemeValue_p(new SchemeAdd(m_global)));
     m_global->set_env("-", SchemeValue_p(new SchemeSub(m_global)));
+    m_global->set_env(">", SchemeValue_p(new SchemeCompareGT(m_global)));
+    m_global->set_env("<", SchemeValue_p(new SchemeCompareLT(m_global)));
+    m_global->set_env("=", SchemeValue_p(new SchemeCompareEQ(m_global)));
+    m_global->set_env("eq?", SchemeValue_p(new SchemeCompareObjectEQ(m_global)));
 }
 
 SchemeValue_p SchemeEvaluator::eval(SchemeValue_p expr, Frame_p env)

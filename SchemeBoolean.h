@@ -25,5 +25,6 @@ private:
 
 SchemeValue_p sc_true();
 SchemeValue_p sc_false();
+SchemeValue_p sc_boolean(bool v);
 
 #endif
