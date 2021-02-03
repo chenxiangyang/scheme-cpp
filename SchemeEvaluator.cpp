@@ -23,6 +23,8 @@ SchemeEvaluator::SchemeEvaluator()
     m_global->set_env("if", SchemeValue_p(new SchemeIf(m_global)));
     m_global->set_env("+", SchemeValue_p(new SchemeAdd(m_global)));
     m_global->set_env("-", SchemeValue_p(new SchemeSub(m_global)));
+    m_global->set_env("*", SchemeValue_p(new SchemeMul(m_global)));
+    m_global->set_env("/", SchemeValue_p(new SchemeDiv(m_global)));
     m_global->set_env(">", SchemeValue_p(new SchemeCompareGT(m_global)));
     m_global->set_env("<", SchemeValue_p(new SchemeCompareLT(m_global)));
     m_global->set_env("=", SchemeValue_p(new SchemeCompareEQ(m_global)));

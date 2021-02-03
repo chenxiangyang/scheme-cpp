@@ -256,8 +256,7 @@ int main(int argc, char* argv[])
     //test_lambda3();
     //test_lambda4();
     //test_quote();
-    test_show_env();
+    //test_show_env();
     read_exec_loop();
-    std::cout<<"scheme start"<<std::endl;
     return 0;
 }

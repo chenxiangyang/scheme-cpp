@@ -13,6 +13,12 @@ bool is_number(std::string v)
     return std::regex_match(v, r);
 }
 
+bool is_integer(std::string v)
+{
+    std::regex r("^[0-9]+$");
+    return std::regex_match(v, r);
+}
+
 bool is_boolean(std::string v)
 {
     return (v == "#f" || v == "#t");
@@ -34,6 +40,10 @@ SchemeValue_p get_value_from_string(std::string str)
     }
     else if(is_number(str))
     {
+        if(is_integer(str))
+        {
+            return std::make_shared<SchemeInteger>(std::atoi(str.c_str()));
+        }
         float v = std::atof(str.c_str());
         return std::make_shared<SchemeFloat>(v);
     }
