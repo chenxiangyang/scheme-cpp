@@ -39,7 +39,7 @@ SchemeValue_p get_value_from_string(std::string str)
     }
     else if(is_string(str))
     {
-        std::string s = str.substr(1,str.size()-1);
+        std::string s = str.substr(1,str.size()-2);
         return std::make_shared<SchemeString>(s);
     }
     return std::make_shared<SchemeSymbol>(str);

@@ -114,5 +114,6 @@ std::string SchemeReader::get_string()
     }
     tmp.push_back('\"');
     tmp.push_back(0);
+    //std::cout<<"get_string :"<<tmp.data()<<std::endl;;
     return std::string(tmp.data());
 }

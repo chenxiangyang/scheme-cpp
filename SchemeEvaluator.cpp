@@ -64,6 +64,8 @@ SchemeValue_p eval(SchemeValue_p expr, Frame_p env)
         return expr;
     if(expr->is_number())
         return expr;
+    if(expr->is_string())
+        return expr;
     if(expr->is_pair())
     {
         auto first = car(expr);

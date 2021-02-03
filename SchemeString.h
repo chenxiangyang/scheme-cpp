@@ -10,6 +10,7 @@ public:
     {
         return m_value;
     }
+    bool is_string() override{return true;}
 private:
     std::string m_value;
 };
