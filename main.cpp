@@ -2,6 +2,7 @@
 #include "SchemeReader.h"
 #include "SchemeTokens.h"
 #include "SchemeEvaluator.h"
+#include <fstream>
 void test_reader()
 {
     SchemeReader reader([](){
@@ -221,10 +222,10 @@ void test_show_env()
     std::cout<<result->to_string()<<std::endl;
 }
 
-void read_exec_loop()
+void read_exec_loop(std::function<char()> f)
 {
     std::cout<<"scheme"<<std::endl;
-    auto reader = std::make_shared<SchemeReader>(std::getchar);
+    auto reader = std::make_shared<SchemeReader>(f);
 
     auto token = std::make_shared<SchemeTokens>(reader);
     SchemeEvaluator e;
@@ -245,6 +246,46 @@ void read_exec_loop()
     }
 }
 
+int load(std::string file)
+{
+    std::ifstream in;
+    in.open(file);
+    if(in.is_open()==false)
+    {
+        std::cout<<"invalid input file:"<<file<<std::endl;
+        return -1;
+    }
+
+    auto reader = std::make_shared<SchemeReader>([&in](){
+        if(in.good())
+        {
+            char c = in.get();
+            return c;
+        }
+
+        char c=0;
+        throw std::runtime_error("end.");
+        return c;
+    });
+
+    auto token = std::make_shared<SchemeTokens>(reader);
+    SchemeEvaluator e;
+
+    while(1)
+    {
+        try{
+            auto first = get_line(token);
+            auto result = e.eval(first);
+            //std::cout<<"line result:"<<result->to_string()<<std::endl;
+        }
+        catch(std::exception& e)
+        {
+            std::cout<<e.what()<<std::endl;
+            return 0;
+        }
+    }
+}
+
 int main(int argc, char* argv[])
 {
     //test_reader();
@@ -257,6 +298,12 @@ int main(int argc, char* argv[])
     //test_lambda4();
     //test_quote();
     //test_show_env();
-    read_exec_loop();
+
+    if(argc==1)
+        read_exec_loop(std::getchar);
+    else
+    {
+    }
+
     return 0;
 }
