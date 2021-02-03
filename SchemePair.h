@@ -19,10 +19,21 @@ public:
     {
         if(m_value->is_pair())
         {
-            return std::string("(") + m_value->to_string() + ") " + m_next->to_string();
+            if(m_next->is_nil())
+                return std::string("(") + m_value->to_string() + ")";
+            else if(m_next->is_pair())
+                return std::string("(") + m_value->to_string() + ")" + m_next->to_string();
+            else
+                return std::string("(") + m_value->to_string() + ") . " + m_next->to_string();
         }
-        return m_value->to_string() + " " + m_next->to_string();
+        if(m_next->is_nil())
+            return m_value->to_string();
+        else if(m_next->is_pair())
+            return m_value->to_string() + " " + m_next->to_string();
+        else
+            return m_value->to_string() + " . " + m_next->to_string();
     }
+
     size_t count();
     bool is_list() override;
 

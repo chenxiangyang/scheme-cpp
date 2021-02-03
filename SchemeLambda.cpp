@@ -13,6 +13,14 @@ SchemeValue_p SchemeLambda::apply(SchemeValue_p params, Frame_p env)
     return func;
 }
 
+std::string SchemeLambdaExpr::to_string()
+{
+    return SchemeProduce::to_string() +
+            std::string(": (lambda (") +
+            m_formal_parameters->to_string() +
+            ") ("+ m_body->to_string() + "))";
+}
+
 SchemeValue_p SchemeLambdaExpr::apply(SchemeValue_p params, Frame_p env)
 {
     auto param_env = m_env->create_child();

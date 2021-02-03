@@ -8,9 +8,10 @@
 #include "produces/SchemeAdd.h"
 #include "produces/SchemeIf.h"
 #include "produces/SchemeCompare.h"
+#include "produces/SchemeCommProduce.h"
 
 std::vector<std::string> raw_func_name_list = {
-    "define","lambda","if"
+    "define","lambda","if","quote"
 };
 
 SchemeEvaluator::SchemeEvaluator()
@@ -26,6 +27,11 @@ SchemeEvaluator::SchemeEvaluator()
     m_global->set_env("<", SchemeValue_p(new SchemeCompareLT(m_global)));
     m_global->set_env("=", SchemeValue_p(new SchemeCompareEQ(m_global)));
     m_global->set_env("eq?", SchemeValue_p(new SchemeCompareObjectEQ(m_global)));
+    m_global->set_env("cons", SchemeValue_p(new SchemeCommonProduce(produce_cons,m_global)));
+    m_global->set_env("car", SchemeValue_p(new SchemeCommonProduce(produce_car,m_global)));
+    m_global->set_env("cdr", SchemeValue_p(new SchemeCommonProduce(produce_cdr,m_global)));
+    m_global->set_env("quote", SchemeValue_p(new SchemeCommonProduce(produce_quote,m_global)));
+    m_global->set_env("eval", SchemeValue_p(new SchemeCommonProduce(produce_eval,m_global)));
 }
 
 SchemeValue_p SchemeEvaluator::eval(SchemeValue_p expr, Frame_p env)
@@ -82,7 +88,6 @@ SchemeValue_p eval(SchemeValue_p expr, Frame_p env)
 
 SchemeValue_p eval_params(SchemeValue_p params, Frame_p env)
 {
-
     if(params->is_nil())
         return nil();
 

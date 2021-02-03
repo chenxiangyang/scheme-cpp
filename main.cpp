@@ -143,6 +143,55 @@ void test_lambda3()
     std::cout<<result->to_string()<<std::endl;
 }
 
+void test_lambda4()
+{
+    std::cout<<"test_lambda4"<<std::endl;
+    auto reader = std::make_shared<SchemeReader>([](){
+        static char test_exp[]=
+                "(define a(cons 1 2))"
+                "(car a)";
+        static int index = 0;
+        return test_exp[index++];
+    });
+
+    auto token = std::make_shared<SchemeTokens>(reader);
+    SchemeEvaluator e;
+
+    auto first = get_line(token);
+    auto result = e.eval(first);
+
+    auto second = get_line(token);
+    result = e.eval(second);
+    std::cout<<result->to_string()<<std::endl;
+}
+
+void test_quote()
+{
+    std::cout<<"test_lambda4"<<std::endl;
+    auto reader = std::make_shared<SchemeReader>([](){
+        static char test_exp[]=
+                "(define a(cons 1 2))"
+                "(define b (quote a))"
+                "(quote (+ 1 1))";
+                //"(eval (quote (+ 1 1)))";
+        static int index = 0;
+        return test_exp[index++];
+    });
+
+    auto token = std::make_shared<SchemeTokens>(reader);
+    SchemeEvaluator e;
+
+    auto first = get_line(token);
+    auto result = e.eval(first);
+
+    auto second = get_line(token);
+    result = e.eval(second);
+    std::cout<<result->to_string()<<std::endl;
+
+    auto third = get_line(token);
+    result = e.eval(third);
+    std::cout<<result->to_string()<<std::endl;
+}
 void read_exec_loop()
 {
     std::cout<<"scheme"<<std::endl;
@@ -176,6 +225,8 @@ int main(int argc, char* argv[])
     //test_lambda();
     //test_lambda2();
     //test_lambda3();
+    test_lambda4();
+    test_quote();
     read_exec_loop();
     std::cout<<"scheme start"<<std::endl;
     return 0;

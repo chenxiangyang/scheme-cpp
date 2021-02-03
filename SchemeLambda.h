@@ -12,6 +12,8 @@ class SchemeLambdaExpr: public SchemeProduce
 {
 public:
     SchemeLambdaExpr(Frame_p env):SchemeProduce(env){}
+
+    std::string to_string() override;
     SchemeValue_p apply(SchemeValue_p params, Frame_p env) override;
 
     SchemeValue_p m_formal_parameters;
