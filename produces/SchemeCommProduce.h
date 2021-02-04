@@ -22,5 +22,7 @@ SchemeValue_p produce_eval(SchemeValue_p param,Frame_p env,Frame_p func_env);
 SchemeValue_p produce_show_env(SchemeValue_p param,Frame_p env,Frame_p func_env);
 SchemeValue_p produce_begin(SchemeValue_p param,Frame_p env,Frame_p func_env);
 SchemeValue_p produce_display(SchemeValue_p param,Frame_p env,Frame_p func_env);
+SchemeValue_p produce_load(SchemeValue_p param, Frame_p env, Frame_p func_env);
+SchemeValue_p load(std::string file, Frame_p env);
 
 #endif

@@ -94,6 +94,10 @@ SchemeValue_p get_item(SchemeTokens_p t)
 SchemeValue_p get_line(SchemeTokens_p t)
 {
     std::string token = t->get_token();
+
+    if(token.empty())
+        return NULL;
+
     if(token == "(")
     {
         auto result = get_item(t);

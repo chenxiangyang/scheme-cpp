@@ -37,6 +37,7 @@ SchemeEvaluator::SchemeEvaluator()
     m_global->set_env("env", SchemeValue_p(new SchemeCommonProduce(produce_show_env,m_global)));
     m_global->set_env("begin", SchemeValue_p(new SchemeCommonProduce(produce_begin,m_global)));
     m_global->set_env("display", SchemeValue_p(new SchemeCommonProduce(produce_display,m_global)));
+    m_global->set_env("load", SchemeValue_p(new SchemeCommonProduce(produce_load,m_global)));
 }
 
 SchemeValue_p SchemeEvaluator::eval(SchemeValue_p expr, Frame_p env)

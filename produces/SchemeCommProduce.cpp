@@ -1,8 +1,12 @@
 #include <iostream>
+#include <fstream>
+#include "../SchemeReader.h"
+#include "../SchemeTokens.h"
 #include "SchemeCommProduce.h"
 #include "../SchemePair.h"
 #include "../SchemeEvaluator.h"
 #include "../SchemeString.h"
+#include "../SchemeBoolean.h"
 SchemeValue_p SchemeCommonProduce::apply(SchemeValue_p params, Frame_p env)
 {
     return m_func(params, env, m_env);
@@ -97,4 +101,67 @@ SchemeValue_p produce_display(SchemeValue_p param, Frame_p env, Frame_p func_env
 {
     std::cout<<car(param)->to_string()<<std::endl;
     return nil();
+}
+
+SchemeValue_p load(std::string file, Frame_p env)
+{
+    std::ifstream in;
+    in.open(file);
+    if(in.is_open()==false)
+    {
+        std::cout<<"invalid file:"<<file<<std::endl;
+        return sc_false();
+    }
+
+    auto reader = std::make_shared<SchemeReader>([&in](){
+        char c = 0;
+        if(!in.eof())
+        {
+            in.read(&c,1);
+            return c;
+        }
+        return c;
+    });
+
+    auto token = std::make_shared<SchemeTokens>(reader);
+
+    SchemeValue_p ret = sc_false();
+    while(1)
+    {
+        try{
+            auto first = get_line(token);
+            if(first==NULL)
+                return ret;
+            ret = ::eval(first, env);
+        }
+        catch(std::exception& e)
+        {
+            std::cout<<e.what()<<std::endl;
+            break;
+        }
+    }
+    return sc_false();
+}
+
+
+SchemeValue_p produce_load(SchemeValue_p param, Frame_p env, Frame_p func_env)
+{
+    if(!param->is_list())
+        throw std::runtime_error(std::string() + "invalid load param:" + param->to_string());
+
+    SchemeValue_p ret = sc_false();
+    while(1)
+    {
+        if(param->is_nil())
+            break;
+        auto name = car(param);
+        if(!name->is_string())
+            throw std::runtime_error(std::string() + "invalid name type:" + name->to_string());
+
+        ret = load(name->toType<SchemeString*>()->value(), env);
+
+        param = cdr(param);
+    }
+
+    return ret;
 }

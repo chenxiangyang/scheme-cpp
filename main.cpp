@@ -3,6 +3,8 @@
 #include "SchemeTokens.h"
 #include "SchemeEvaluator.h"
 #include <fstream>
+#include "produces/SchemeCommProduce.h"
+#include "SchemeNumber.h"
 void test_reader()
 {
     SchemeReader reader([](){
@@ -246,44 +248,16 @@ void read_exec_loop(std::function<char()> f)
     }
 }
 
-int load(std::string file)
+int load(std::string file, SchemeEvaluator* e)
 {
-    std::ifstream in;
-    in.open(file);
-    if(in.is_open()==false)
+    auto ret = load(file, e->m_global);
+    if(ret->is_number())
     {
-        std::cout<<"invalid input file:"<<file<<std::endl;
-        return -1;
+        auto ret_integer = ret->toType<SchemeInteger*>();
+        if(ret_integer)
+            return ret_integer->m_value;
     }
-
-    auto reader = std::make_shared<SchemeReader>([&in](){
-        if(in.good())
-        {
-            char c = in.get();
-            return c;
-        }
-
-        char c=0;
-        throw std::runtime_error("end.");
-        return c;
-    });
-
-    auto token = std::make_shared<SchemeTokens>(reader);
-    SchemeEvaluator e;
-
-    while(1)
-    {
-        try{
-            auto first = get_line(token);
-            auto result = e.eval(first);
-            //std::cout<<"line result:"<<result->to_string()<<std::endl;
-        }
-        catch(std::exception& e)
-        {
-            std::cout<<e.what()<<std::endl;
-            return 0;
-        }
-    }
+    return 0;
 }
 
 int main(int argc, char* argv[])
@@ -303,6 +277,8 @@ int main(int argc, char* argv[])
         read_exec_loop(std::getchar);
     else
     {
+        SchemeEvaluator e;
+        return load(argv[1], &e);
     }
 
     return 0;

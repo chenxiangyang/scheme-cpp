@@ -24,6 +24,7 @@ private:
     std::string get_string();
 
     std::function<char()> m_get_char_func;
+    bool m_finished;
 };
 
 typedef std::shared_ptr<SchemeReader> SchemeReader_p;

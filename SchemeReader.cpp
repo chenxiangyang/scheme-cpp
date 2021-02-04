@@ -3,6 +3,7 @@
 SchemeReader::SchemeReader(std::function<char ()> char_reader)
 {
     m_get_char_func = char_reader;
+    m_finished = false;
 }
 
 SchemeReader::SchemeReader()
@@ -50,7 +51,10 @@ void SchemeReader::parse()
             continue;
         }
         if(c == 0)
+        {
+            m_finished = true;
             break;
+        }
         if(c == '\"')
         {
             m_cached.push_back(get_string());
@@ -95,6 +99,12 @@ std::string SchemeReader::get_symbol()
         if(c==' ' || c==0x0a)
             break;
 
+        if(c == 0)
+        {
+            m_finished = true;
+            break;
+        }
+
         tmp.push_back(c);
     }
     tmp.push_back(0);
@@ -110,6 +120,11 @@ std::string SchemeReader::get_string()
         char c = get_char();
         if(c == '\"')
             break;
+        if(c == 0)
+        {
+            m_finished = true;
+            throw std::runtime_error("string not finished.");
+        }
         tmp.push_back(c);
     }
     tmp.push_back('\"');
