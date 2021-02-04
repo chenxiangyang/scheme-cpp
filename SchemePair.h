@@ -14,6 +14,8 @@ public:
     SchemeValue_p cdr();
     bool is_pair() override{return true;}
 
+    SchemeValue_p clone_only_pair();
+    void replace_with(SchemeValue_p src, SchemeValue_p tgt);
 
     std::string to_string() override
     {

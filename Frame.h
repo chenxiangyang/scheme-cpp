@@ -10,6 +10,7 @@ class Frame: public std::enable_shared_from_this<Frame>
 public:
     Frame();
     void set_env(std::string k, SchemeValue_p value);
+    void change_env(std::string k, SchemeValue_p value);
     SchemeValue_p get(std::string k);
 
     Frame_p getptr();

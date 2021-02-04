@@ -2,6 +2,9 @@
 #define _SCHEMEPRODUCE_H_
 #include "SchemeValue.h"
 #include "Frame.h"
+typedef std::function<SchemeValue_p(SchemeValue_p param)> Continuation;
+inline SchemeValue_p default_cont(SchemeValue_p param){return param;}
+
 class SchemeProduce: public SchemeValue
 {
 public:

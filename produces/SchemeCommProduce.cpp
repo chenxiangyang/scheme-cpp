@@ -7,6 +7,7 @@
 #include "../SchemeEvaluator.h"
 #include "../SchemeString.h"
 #include "../SchemeBoolean.h"
+#include "../SchemeSymbol.h"
 SchemeValue_p SchemeCommonProduce::apply(SchemeValue_p params, Frame_p env)
 {
     return m_func(params, env, m_env);
@@ -143,7 +144,6 @@ SchemeValue_p load(std::string file, Frame_p env)
     return sc_false();
 }
 
-
 SchemeValue_p produce_load(SchemeValue_p param, Frame_p env, Frame_p func_env)
 {
     if(!param->is_list())
@@ -164,4 +164,23 @@ SchemeValue_p produce_load(SchemeValue_p param, Frame_p env, Frame_p func_env)
     }
 
     return ret;
+}
+
+SchemeValue_p produce_call_with_current_context(SchemeValue_p param, Frame_p env, Frame_p func_env)
+{
+    return nil();
+}
+
+SchemeValue_p produce_set_change(SchemeValue_p param, Frame_p env, Frame_p func_env)
+{
+    if(!param->is_list() || param->toType<SchemePair*>()->count()!=2)
+        throw std::runtime_error(std::string()+"invalid set! param:"+param->to_string());
+    auto name = car(param);
+    auto ctx = eval(car(cdr(param)),env);
+
+    if(!name->is_symbol())
+        throw std::runtime_error(std::string()+"set! param name is not symbol:"+name->to_string());
+
+    env->change_env(name->toType<SchemeSymbol*>()->value(), ctx);
+    return sc_true();
 }

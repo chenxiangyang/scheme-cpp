@@ -16,6 +16,7 @@ public:
     virtual bool is_nil(){return false;}
     virtual bool is_list(){return false;}
     virtual bool is_string(){return false;}
+    virtual bool is_continuation(){return false;}
 
     virtual std::string to_string() = 0;
 

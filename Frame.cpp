@@ -21,6 +21,20 @@ void Frame::set_env(std::string k, SchemeValue_p value)
     m_env[k] = value;
 }
 
+void Frame::change_env(std::string k, SchemeValue_p value)
+{
+    if(m_env.find(k) == m_env.end())
+    {
+        if(this->m_parent)
+        {
+            this->m_parent->change_env(k, value);
+            return;
+        }
+        throw std::runtime_error(std::string("can't set! value with key ")+k);
+    }
+    m_env[k] = value;
+}
+
 SchemeValue_p Frame::get(std::string k)
 {
     if(m_env.find(k) == m_env.end())
