@@ -89,7 +89,7 @@ SchemeValue_p eval(SchemeValue_p expr, Frame_p env, Continuation continuation)
         {
             auto holder = std::make_shared<SchemeString>("__call/cc__placeholder__");
             auto ret = continuation(holder);
-            std::cout<<ret->to_string()<<std::endl;
+            //std::cout<<ret->to_string()<<std::endl;
             auto contin = std::make_shared<SchemeContinuation>(ret, holder, env);
 
             auto lambda = eval(car(next), env);
