@@ -19,11 +19,6 @@ SchemeValue_p SchemeContinuation::apply(SchemeValue_p params, Frame_p env)
 
     //std::cout<<"a:"<<new_pair_list->to_string()<<std::endl;
     new_pair_list->toType<SchemePair*>()->replace_with(m_holder_place, car(params));
-    //std::cout<<"b:"<<new_pair_list->to_string()<<std::endl;
-
-    //auto check_proc=[this](SchemeValue_p continuation){
-    //    return (continuation->is_continuation() && continuation.get() == this);
-    //};
 
     auto ret = eval(new_pair_list, env, default_cont/*, check_proc*/);
     return ret;

@@ -32,13 +32,8 @@ SchemeValue_p SchemeLambdaExpr::apply(SchemeValue_p params, Frame_p env)
         throw std::runtime_error(std::string("params is not list"));
 
     auto check_proc = [params](SchemeValue_p continuation){
-
-        std::cout<<"********check param in SchemeLambdaExpr::apply*************"<<std::endl;
-        if(params->is_pair() && car(params) == continuation)
-        {
-            return true;
-        }
-        return false;
+        //std::cout<<"********check param in SchemeLambdaExpr::apply*************"<<std::endl;
+        return (params->is_pair() && car(params) == continuation);
     };
 
     while(1)

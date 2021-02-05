@@ -96,7 +96,7 @@ SchemeValue_p eval(SchemeValue_p expr, Frame_p env, Continuation continuation, C
             auto contin = std::make_shared<SchemeContinuation>(ret, holder, env);
 
             auto check_cont = [contin, check_proc](SchemeValue_p cont){
-                std::cout<<"<<<<<in check function>>>>>"<<std::endl;
+                //std::cout<<"<<<<<in check function>>>>>"<<std::endl;
                     return contin==cont || check_proc(cont);
             };
             auto lambda = eval(car(next), env, default_cont, check_cont);
