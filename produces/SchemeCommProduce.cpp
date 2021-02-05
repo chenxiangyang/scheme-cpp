@@ -8,6 +8,7 @@
 #include "../SchemeString.h"
 #include "../SchemeBoolean.h"
 #include "../SchemeSymbol.h"
+#include "../SchemeContinuation.h"
 SchemeValue_p SchemeCommonProduce::apply(SchemeValue_p params, Frame_p env)
 {
     return m_func(params, env, m_env);

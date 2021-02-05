@@ -31,7 +31,10 @@ SchemeValue_p eval_reduce( ReduceOpFloat func_float, ReduceOpInt func_int, Schem
         auto num = first;
 
         if(num->is_number() == false)
-            throw std::runtime_error(std::string("eval_reduce::apply num is not number, it's ")+num->to_string());
+            throw std::runtime_error(
+                    std::string("eval_reduce::apply num is not number, it's ")+
+                    num->to_string()+"\n"+
+                    params->to_string());
 
         auto scfvalue = num->toType<SchemeFloat*>();
 

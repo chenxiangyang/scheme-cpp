@@ -8,7 +8,7 @@ public:
 
     std::string to_string() override
     {
-        return m_value;
+        return std::string("\"")+m_value+"\"";
     }
     std::string value()
     {

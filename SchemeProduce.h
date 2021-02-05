@@ -1,9 +1,17 @@
 #ifndef _SCHEMEPRODUCE_H_
 #define _SCHEMEPRODUCE_H_
+#include <iostream>
 #include "SchemeValue.h"
 #include "Frame.h"
 typedef std::function<SchemeValue_p(SchemeValue_p param)> Continuation;
+
+typedef std::function<bool(SchemeValue_p)> CheckContinuationProc;
+
 inline SchemeValue_p default_cont(SchemeValue_p param){return param;}
+inline bool check_if_in_continuation_default(SchemeValue_p continuation){
+    std::cout<<"***********default check function**********"<<std::endl;
+    return false;
+}
 
 class SchemeProduce: public SchemeValue
 {

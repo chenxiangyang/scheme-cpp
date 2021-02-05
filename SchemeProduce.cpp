@@ -2,6 +2,7 @@
 #include "SchemePair.h"
 #include "SchemeSymbol.h"
 #include "SchemeEvaluator.h"
+#include "SchemeContinuation.h"
 SchemeValue_p SchemeDefine::apply(SchemeValue_p params, Frame_p env)
 {
     if(params->is_pair()==false)
@@ -14,7 +15,9 @@ SchemeValue_p SchemeDefine::apply(SchemeValue_p params, Frame_p env)
     if(first->is_symbol())
     {
         auto symbol = first->toType<SchemeSymbol*>();
-        env->set_env(symbol->value(), eval(rest->toType<SchemePair*>()->car(), env));
+        SchemeValue_p result = nil();
+        result = eval(rest->toType<SchemePair*>()->car(), env);
+        env->set_env(symbol->value(), result);
     }
     else if(first->is_list())
     {

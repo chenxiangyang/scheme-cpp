@@ -1,7 +1,9 @@
+#include <iostream>
 #include "SchemeLambda.h"
 #include "SchemePair.h"
 #include "SchemeSymbol.h"
 #include "SchemeEvaluator.h"
+#include "SchemeContinuation.h"
 SchemeValue_p SchemeLambda::apply(SchemeValue_p params, Frame_p env)
 {
     if(!params->is_pair())
@@ -29,6 +31,16 @@ SchemeValue_p SchemeLambdaExpr::apply(SchemeValue_p params, Frame_p env)
     if(!params->is_list() && !params->is_nil())
         throw std::runtime_error(std::string("params is not list"));
 
+    auto check_proc = [params](SchemeValue_p continuation){
+
+        std::cout<<"********check param in SchemeLambdaExpr::apply*************"<<std::endl;
+        if(params->is_pair() && car(params) == continuation)
+        {
+            return true;
+        }
+        return false;
+    };
+
     while(1)
     {
         if(formal_params->is_nil() && params->is_nil())
@@ -48,5 +60,5 @@ SchemeValue_p SchemeLambdaExpr::apply(SchemeValue_p params, Frame_p env)
         params = cdr(params);
     }
 
-    return eval(m_body, param_env);
+    return eval(m_body, param_env, default_cont, check_proc);
 }
