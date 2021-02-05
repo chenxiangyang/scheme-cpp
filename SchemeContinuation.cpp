@@ -2,6 +2,14 @@
 #include "SchemeContinuation.h"
 #include "SchemePair.h"
 #include "SchemeEvaluator.h"
+std::string SchemeContinuation::to_string()
+{
+    return SchemeProduce::to_string()+
+            "continuation:"+
+            m_env->to_string(true)+
+            m_proc->to_string();
+}
+
 SchemeValue_p SchemeContinuation::apply(SchemeValue_p params, Frame_p env)
 {
     if(!params->is_list() || params->toType<SchemePair*>()->count()!=1)

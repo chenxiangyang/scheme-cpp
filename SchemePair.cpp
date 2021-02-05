@@ -18,19 +18,33 @@ SchemeValue_p SchemePair::cdr()
 
 SchemeValue_p SchemePair::clone_only_pair()
 {
-    if(m_next->is_nil())
-    {
-        return cons(m_value, nil());
-    }
-    return cons(m_value, m_next->toType<SchemePair*>()->clone_only_pair());
+    auto new_next = m_next->is_pair()? m_next->toType<SchemePair*>()->clone_only_pair():m_next;
+    auto new_value = m_value->is_pair()? m_value->toType<SchemePair*>()->clone_only_pair():m_value;
+
+    return cons(new_value, new_next);
 }
 
-void SchemePair::replace_with(SchemeValue_p src, SchemeValue_p tgt)
+bool SchemePair::replace_with(SchemeValue_p src, SchemeValue_p tgt)
 {
-    if(m_value == src)
+    if(m_value==src)
+    {
         m_value = tgt;
-    else if(!m_next->is_nil())
-        m_next->toType<SchemePair*>()->replace_with(src, tgt);
+        return true;
+    }
+    if(m_next==src)
+    {
+        m_next=tgt;
+        return true;
+    }
+
+    bool ret = false;
+    if(m_value->is_pair())
+        ret = ret || m_value->toType<SchemePair*>()->replace_with(src, tgt);
+
+    if(m_next->is_pair())
+        ret = ret || m_next->toType<SchemePair*>()->replace_with(src, tgt);
+
+    return ret;
 }
 
 size_t SchemePair::count()
