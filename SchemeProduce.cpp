@@ -3,7 +3,7 @@
 #include "SchemeSymbol.h"
 #include "SchemeEvaluator.h"
 #include "SchemeContinuation.h"
-SchemeValue_p SchemeDefine::apply(SchemeValue_p params, Frame_p env)
+SchemeValue_p SchemeDefine::apply(SchemeValue_p params, Frame_p env, Tracker &tracker)
 {
     if(params->is_pair()==false)
         throw std::runtime_error("apply param invalid.");
@@ -16,7 +16,10 @@ SchemeValue_p SchemeDefine::apply(SchemeValue_p params, Frame_p env)
     {
         auto symbol = first->toType<SchemeSymbol*>();
         SchemeValue_p result = nil();
-        result = eval(rest->toType<SchemePair*>()->car(), env);
+        Tracker new_tracker([](SchemeValue_p param){
+
+        }, tracker.m_check_proc);
+        result = eval(rest->toType<SchemePair*>()->car(), env, new_tracker);
         env->set_env(symbol->value(), result);
     }
     else if(first->is_list())
@@ -27,7 +30,7 @@ SchemeValue_p SchemeDefine::apply(SchemeValue_p params, Frame_p env)
         auto expr = cons(std::make_shared<SchemeSymbol>("lambda"),cons(formal_params, rest));
 
         auto symbol = func_name->toType<SchemeSymbol*>();
-        env->set_env(symbol->value(), eval(expr, env));
+        env->set_env(symbol->value(), eval(expr, env, tracker));
     }
 
     return nil();

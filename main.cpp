@@ -250,6 +250,7 @@ void read_exec_loop(std::function<char()> f)
 
 int load(std::string file, SchemeEvaluator* e)
 {
+    Tracker tracker;
     auto ret = load(file, e->m_global);
     if(ret->is_number())
     {

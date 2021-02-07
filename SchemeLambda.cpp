@@ -4,12 +4,12 @@
 #include "SchemeSymbol.h"
 #include "SchemeEvaluator.h"
 #include "SchemeContinuation.h"
-SchemeValue_p SchemeLambda::apply(SchemeValue_p params, Frame_p env)
+SchemeValue_p SchemeLambda::apply(SchemeValue_p params, Frame_p envtracker, Tracker &tracker)
 {
     if(!params->is_pair())
         throw std::runtime_error("lambda param is not list.");
 
-    auto func = std::make_shared<SchemeLambdaExpr>(env);
+    auto func = std::make_shared<SchemeLambdaExpr>(envtracker);
     func->m_body = car(cdr(params));
     func->m_formal_parameters = car(params);
     return func;
@@ -23,7 +23,7 @@ std::string SchemeLambdaExpr::to_string()
             ") ("+ m_body->to_string() + "))";
 }
 
-SchemeValue_p SchemeLambdaExpr::apply(SchemeValue_p params, Frame_p env)
+SchemeValue_p SchemeLambdaExpr::apply(SchemeValue_p params, Frame_p env, Tracker &tracker)
 {
     auto param_env = m_env->create_child();
     auto formal_params = m_formal_parameters;
@@ -55,5 +55,6 @@ SchemeValue_p SchemeLambdaExpr::apply(SchemeValue_p params, Frame_p env)
         params = cdr(params);
     }
 
-    return eval(m_body, param_env, default_cont, check_proc);
+    Tracker eval_tracker(default_cont, check_proc);
+    return eval(m_body, param_env, eval_tracker);
 }

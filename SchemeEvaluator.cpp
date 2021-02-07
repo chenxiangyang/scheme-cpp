@@ -45,14 +45,15 @@ SchemeEvaluator::SchemeEvaluator()
     m_global->set_env("set!", SchemeValue_p(new SchemeCommonProduce(produce_set_change,m_global,"set!")));
 }
 
-SchemeValue_p SchemeEvaluator::eval(SchemeValue_p expr, Frame_p env)
+SchemeValue_p SchemeEvaluator::eval(SchemeValue_p expr, Frame_p env, Tracker& tracker)
 {
-    return ::eval(expr, env);
+    return ::eval(expr, env, tracker);
 }
 
 SchemeValue_p SchemeEvaluator::eval(SchemeValue_p expr)
 {
-    return ::eval(expr, m_global);
+    Tracker tracker;
+    return ::eval(expr, m_global, tracker);
 }
 
 bool is_raw_func(SchemeValue_p sym)
@@ -64,7 +65,7 @@ bool is_raw_func(SchemeValue_p sym)
     return !(itor==raw_func_name_list.end());
 }
 
-SchemeValue_p eval(SchemeValue_p expr, Frame_p env, Continuation continuation, CheckContinuationProc check_proc)
+SchemeValue_p eval(SchemeValue_p expr, Frame_p env, Tracker& tracker)
 {
     if(expr->is_symbol())
         return env->get(expr->toType<SchemeSymbol*>()->value());
@@ -80,37 +81,17 @@ SchemeValue_p eval(SchemeValue_p expr, Frame_p env, Continuation continuation, C
         return expr;
     if(expr->is_pair())
     {
-        //std::cout<<"[[[["<<expr->to_string()<<"]]]]"<<std::endl;
+        auto& collector = tracker.m_collect_proc;
+        auto& check_proc = tracker.m_check_proc;
+        std::cout<<"[[[["<<expr->to_string()<<"]]]]"<<std::endl;
         auto first = car(expr);
         auto next = cdr(expr);
 
-        auto sc_op = eval(first, env, [continuation, next](SchemeValue_p param){
-            return continuation(cons(param, next));
+        Tracker op_eval_tracker([collector, next](SchemeValue_p param){
+            return collector(cons(param, next));
         },check_proc);
 
-        if(sc_op == env->get("call/cc"))
-        {
-            auto holder = std::make_shared<SchemeString>("__call/cc__placeholder__");
-            auto ret = continuation(holder);
-            //std::cout<<ret->to_string()<<std::endl;
-            auto contin = std::make_shared<SchemeContinuation>(ret, holder, env);
-
-            auto check_cont = [contin, check_proc](SchemeValue_p cont){
-                //std::cout<<"<<<<<in check function>>>>>"<<std::endl;
-                    return contin==cont || check_proc(cont);
-            };
-            auto lambda = eval(car(next), env, default_cont, check_cont);
-
-            if(!lambda->is_produce())
-                std::runtime_error(std::string()+"param of call/cc must be produce,"+lambda->to_string());
-            try{
-                return lambda->toType<SchemeProduce*>()->apply(cons(contin,nil()), env);
-            }
-            catch(ContinuationException& e)
-            {
-                return e.return_value();
-            }
-        }
+        auto sc_op = eval(first, env, op_eval_tracker);
 
         auto is_raw= is_raw_func(first);
         auto params = next;
@@ -119,10 +100,10 @@ SchemeValue_p eval(SchemeValue_p expr, Frame_p env, Continuation continuation, C
             if(!next->is_list() && !next->is_nil())
                 throw std::runtime_error(std::string("param is not list or nil:")+next->to_string());
 
-            params = eval_params(next, env,
-                                 [sc_op,continuation](SchemeValue_p param){
-                return continuation(cons(sc_op,param));
+            Tracker param_tracker([sc_op,collector](SchemeValue_p param){
+                return collector(cons(sc_op,param));
             },check_proc);
+            params = eval_params(next, env,param_tracker);
         }
 
         if(sc_op->is_produce())
@@ -132,14 +113,15 @@ SchemeValue_p eval(SchemeValue_p expr, Frame_p env, Continuation continuation, C
                 if(check_proc(sc_op))
                     throw ContinuationException(car(params), sc_op);
             }
-            auto result = sc_op->toType<SchemeProduce*>()->apply(params, env);
+
+            auto result = sc_op->toType<SchemeProduce*>()->apply(params, env, tracker);
             return result;
         }
     }
     throw std::runtime_error(std::string("unknown expr:")+expr->to_string());
 }
 
-SchemeValue_p eval_params(SchemeValue_p params, Frame_p env, Continuation continuation,CheckContinuationProc check_proc)
+SchemeValue_p eval_params(SchemeValue_p params, Frame_p env, Tracker& tracker)
 {
     if(params->is_nil())
         return nil();
@@ -147,12 +129,18 @@ SchemeValue_p eval_params(SchemeValue_p params, Frame_p env, Continuation contin
     auto first = car(params);
     auto rest = cdr(params);
 
-    auto result_first = eval(first, env, [continuation, rest](SchemeValue_p param){
-        return continuation(cons(param, rest));},check_proc);
+    auto collector = tracker.m_collect_proc;
+    auto check_proc = tracker.m_check_proc;
 
-    auto result_rest = eval_params(rest, env, [result_first,continuation](SchemeValue_p param){
-        return continuation(cons(result_first, param));
+    Tracker eval_tracker([collector, rest](SchemeValue_p param){
+        return collector(cons(param, rest));},check_proc);
+
+    auto result_first = eval(first, env, eval_tracker);
+
+    Tracker rest_param_tracker([result_first,collector](SchemeValue_p param){
+        return collector(cons(result_first, param));
     },check_proc);
+    auto result_rest = eval_params(rest, env, rest_param_tracker);
 
     return cons(result_first, result_rest);
 }

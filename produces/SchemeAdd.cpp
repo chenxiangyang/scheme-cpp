@@ -56,22 +56,22 @@ SchemeValue_p eval_reduce( ReduceOpFloat func_float, ReduceOpInt func_int, Schem
     return std::make_shared<SchemeFloat>(sum_float);
 }
 
-SchemeValue_p SchemeAdd::apply(SchemeValue_p params, Frame_p env)
+SchemeValue_p SchemeAdd::apply(SchemeValue_p params, Frame_p env, Tracker& tracker)
 {
     return eval_reduce([](float x, float y){return x+y;}, [](int x,int y){return x+y;},params);
 }
 
-SchemeValue_p SchemeSub::apply(SchemeValue_p params, Frame_p env)
+SchemeValue_p SchemeSub::apply(SchemeValue_p params, Frame_p env, Tracker& tracker)
 {
     return eval_reduce([](float x, float y){return x-y;}, [](int x,int y){return x-y;},params);
 }
 
-SchemeValue_p SchemeMul::apply(SchemeValue_p params, Frame_p env)
+SchemeValue_p SchemeMul::apply(SchemeValue_p params, Frame_p env, Tracker& tracker)
 {
     return eval_reduce([](float x, float y){return x*y;}, [](int x,int y){return x*y;},params);
 }
 
-SchemeValue_p SchemeDiv::apply(SchemeValue_p params, Frame_p env)
+SchemeValue_p SchemeDiv::apply(SchemeValue_p params, Frame_p env, Tracker& tracker)
 {
     return eval_reduce([](float x, float y){return x/y;}, [](int x,int y){return x/y;},params);
 }

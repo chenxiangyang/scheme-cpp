@@ -9,12 +9,12 @@
 #include "../SchemeBoolean.h"
 #include "../SchemeSymbol.h"
 #include "../SchemeContinuation.h"
-SchemeValue_p SchemeCommonProduce::apply(SchemeValue_p params, Frame_p env)
+SchemeValue_p SchemeCommonProduce::apply(SchemeValue_p params, Frame_p env, Tracker &tracker)
 {
-    return m_func(params, env, m_env);
+    return m_func(params, env, m_env, tracker);
 }
 
-SchemeValue_p produce_cons(SchemeValue_p params, Frame_p env, Frame_p func_env)
+SchemeValue_p produce_cons(SchemeValue_p params, Frame_p env, Frame_p func_env, Tracker &tracker)
 {
     if(!params->is_list() || params->toType<SchemePair*>()->count()!=2)
         throw std::runtime_error(std::string("invalid cons params:")+params->to_string());
@@ -23,7 +23,7 @@ SchemeValue_p produce_cons(SchemeValue_p params, Frame_p env, Frame_p func_env)
     return cons(car(params), car(cdr(params)));
 }
 
-SchemeValue_p produce_car(SchemeValue_p param, Frame_p env, Frame_p func_env)
+SchemeValue_p produce_car(SchemeValue_p param, Frame_p env, Frame_p func_env,Tracker& tracker)
 {
     //std::cout<<"car param:"<<param->to_string()<<std::endl;
     if(!param->is_pair())
@@ -33,7 +33,7 @@ SchemeValue_p produce_car(SchemeValue_p param, Frame_p env, Frame_p func_env)
     return result;
 }
 
-SchemeValue_p produce_cdr(SchemeValue_p param, Frame_p env, Frame_p func_env)
+SchemeValue_p produce_cdr(SchemeValue_p param, Frame_p env, Frame_p func_env,Tracker& tracker)
 {
     //std::cout<<"cdr param:"<<param->to_string()<<std::endl;
     if(!param->is_pair())
@@ -43,21 +43,22 @@ SchemeValue_p produce_cdr(SchemeValue_p param, Frame_p env, Frame_p func_env)
     return result;
 }
 
-SchemeValue_p produce_quote(SchemeValue_p param, Frame_p env, Frame_p func_env)
+SchemeValue_p produce_quote(SchemeValue_p param, Frame_p env, Frame_p func_env,Tracker& tracker)
 {
     if(param->is_pair() && cdr(param)!=nil())
         throw std::runtime_error(std::string("invalid quote params:")+param->to_string());
     return car(param);
 }
 
-SchemeValue_p produce_eval(SchemeValue_p param, Frame_p env, Frame_p func_env)
+SchemeValue_p produce_eval(SchemeValue_p param, Frame_p env, Frame_p func_env, Tracker& tracker)
 {
     //if(!param->is_list() || cdr(param)==nil())
     //    throw std::runtime_error(std::string("invalid eval params:")+param->to_string());
-    return eval(car(param), env);
+    //Tracker tracker;
+    return eval(car(param), env, tracker);
 }
 
-SchemeValue_p produce_show_env(SchemeValue_p param, Frame_p env, Frame_p func_env)
+SchemeValue_p produce_show_env(SchemeValue_p param, Frame_p env, Frame_p func_env,Tracker& tracker)
 {
     if(param->is_nil())
     {
@@ -86,7 +87,7 @@ SchemeValue_p produce_show_env(SchemeValue_p param, Frame_p env, Frame_p func_en
     throw std::runtime_error(std::string("invalid show_env param:")+param->to_string());
 }
 
-SchemeValue_p produce_begin(SchemeValue_p param, Frame_p env, Frame_p func_env)
+SchemeValue_p produce_begin(SchemeValue_p param, Frame_p env, Frame_p func_env,Tracker& tracker)
 {
     if(!param->is_list())
         throw std::runtime_error(std::string("invalid begin param:")+param->to_string());
@@ -99,7 +100,7 @@ SchemeValue_p produce_begin(SchemeValue_p param, Frame_p env, Frame_p func_env)
     }
 }
 
-SchemeValue_p produce_display(SchemeValue_p param, Frame_p env, Frame_p func_env)
+SchemeValue_p produce_display(SchemeValue_p param, Frame_p env, Frame_p func_env,Tracker& tracker)
 {
     std::cout<<car(param)->to_string()<<std::endl;
     return nil();
@@ -130,22 +131,23 @@ SchemeValue_p load(std::string file, Frame_p env)
     SchemeValue_p ret = sc_false();
     while(1)
     {
-        try{
             auto first = get_line(token);
             if(first==NULL)
                 return ret;
-            ret = ::eval(first, env);
+            Tracker tracker;
+            ret = ::eval(first, env, tracker);
+            try{
         }
         catch(std::exception& e)
         {
-            std::cout<<e.what()<<std::endl;
+            std::cerr<<e.what()<<std::endl;
             break;
         }
     }
     return sc_false();
 }
 
-SchemeValue_p produce_load(SchemeValue_p param, Frame_p env, Frame_p func_env)
+SchemeValue_p produce_load(SchemeValue_p param, Frame_p env, Frame_p func_env,Tracker& tracker)
 {
     if(!param->is_list())
         throw std::runtime_error(std::string() + "invalid load param:" + param->to_string());
@@ -167,17 +169,39 @@ SchemeValue_p produce_load(SchemeValue_p param, Frame_p env, Frame_p func_env)
     return ret;
 }
 
-SchemeValue_p produce_call_with_current_context(SchemeValue_p param, Frame_p env, Frame_p func_env)
+SchemeValue_p produce_call_with_current_context(SchemeValue_p param, Frame_p env, Frame_p func_env,Tracker& tracker)
 {
-    return nil();
+    auto& collector = tracker.m_collect_proc;
+    auto& check_proc = tracker.m_check_proc;
+    auto holder = std::make_shared<SchemeString>("__call/cc__placeholder__");
+    auto ret = collector(holder);
+    //std::cout<<ret->to_string()<<std::endl;
+    auto contin = std::make_shared<SchemeContinuation>(ret, holder, env);
+
+    auto check_cont = [contin, check_proc](SchemeValue_p cont){
+        //std::cout<<"<<<<<in check function>>>>>"<<std::endl;
+            return contin==cont || check_proc(cont);
+    };
+    Tracker call_cc_tracker(default_cont, check_cont);
+    auto lambda = eval(car(param), env, call_cc_tracker);
+
+    if(!lambda->is_produce())
+        std::runtime_error(std::string()+"param of call/cc must be produce,"+lambda->to_string());
+    try{
+        return lambda->toType<SchemeProduce*>()->apply(cons(contin,nil()), env, call_cc_tracker);
+    }
+    catch(ContinuationException& e)
+    {
+        return e.return_value();
+    }
 }
 
-SchemeValue_p produce_set_change(SchemeValue_p param, Frame_p env, Frame_p func_env)
+SchemeValue_p produce_set_change(SchemeValue_p param, Frame_p env, Frame_p func_env,Tracker& tracker)
 {
     if(!param->is_list() || param->toType<SchemePair*>()->count()!=2)
         throw std::runtime_error(std::string()+"invalid set! param:"+param->to_string());
     auto name = car(param);
-    auto ctx = eval(car(cdr(param)),env);
+    auto ctx = eval(car(cdr(param)),env,tracker);
 
     if(!name->is_symbol())
         throw std::runtime_error(std::string()+"set! param name is not symbol:"+name->to_string());

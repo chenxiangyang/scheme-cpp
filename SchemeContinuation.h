@@ -11,11 +11,11 @@ public:
         SchemeProduce(env),
         m_holder_place(holder_place),
         m_proc(proc){
-        //std::cout<<"SchemeContinuation:"<<m_proc->to_string()<<std::endl;
+        std::cout<<"SchemeContinuation:"<<m_proc->to_string()<<std::endl;
     }
     bool is_continuation() override{return true;}
     std::string to_string() override;
-    SchemeValue_p apply(SchemeValue_p params, Frame_p env) override;
+    SchemeValue_p apply(SchemeValue_p params, Frame_p env, Tracker& tracker) override;
 
 private:
     SchemeValue_p m_proc;

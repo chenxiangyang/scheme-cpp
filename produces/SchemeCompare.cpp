@@ -52,7 +52,7 @@ SchemeValue_p compare_number_eq(SchemeValue_p first, SchemeValue_p second)
 }
 
 
-SchemeValue_p SchemeCompareGT::apply(SchemeValue_p params, Frame_p env)
+SchemeValue_p SchemeCompareGT::apply(SchemeValue_p params, Frame_p env, Tracker &tracker)
 {
     if(!params->is_list())
         throw std::runtime_error(std::string("invalid param:")+params->to_string());
@@ -63,7 +63,7 @@ SchemeValue_p SchemeCompareGT::apply(SchemeValue_p params, Frame_p env)
     return compare_gt(first, second);
 }
 
-SchemeValue_p SchemeCompareLT::apply(SchemeValue_p params, Frame_p env)
+SchemeValue_p SchemeCompareLT::apply(SchemeValue_p params, Frame_p env, Tracker &tracker)
 {
     if(!params->is_list())
         throw std::runtime_error(std::string("invalid param:")+params->to_string());
@@ -74,7 +74,7 @@ SchemeValue_p SchemeCompareLT::apply(SchemeValue_p params, Frame_p env)
     return compare_gt(second, first);
 }
 
-SchemeValue_p SchemeCompareEQ::apply(SchemeValue_p params, Frame_p env)
+SchemeValue_p SchemeCompareEQ::apply(SchemeValue_p params, Frame_p env, Tracker &tracker)
 {
     if(!params->is_list())
         throw std::runtime_error(std::string("invalid param:")+params->to_string());
@@ -87,7 +87,7 @@ SchemeValue_p SchemeCompareEQ::apply(SchemeValue_p params, Frame_p env)
 
 
 
-SchemeValue_p SchemeCompareObjectEQ::apply(SchemeValue_p params, Frame_p env)
+SchemeValue_p SchemeCompareObjectEQ::apply(SchemeValue_p params, Frame_p env, Tracker &tracker)
 {
     if(!params->is_list())
         throw std::runtime_error(std::string("invalid param:")+params->to_string());
