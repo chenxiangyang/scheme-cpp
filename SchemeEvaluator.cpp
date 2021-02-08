@@ -83,7 +83,7 @@ SchemeValue_p eval(SchemeValue_p expr, Frame_p env, Tracker& tracker)
     {
         auto& collector = tracker.m_collect_proc;
         auto& check_proc = tracker.m_check_proc;
-        std::cout<<"[[[["<<expr->to_string()<<"]]]]"<<std::endl;
+        //std::cout<<"[[[["<<expr->to_string()<<"]]]]"<<std::endl;
         auto first = car(expr);
         auto next = cdr(expr);
 
