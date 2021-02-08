@@ -133,7 +133,8 @@ SchemeValue_p eval_params(SchemeValue_p params, Frame_p env, Tracker& tracker)
     auto check_proc = tracker.m_check_proc;
 
     Tracker eval_tracker([collector, rest](SchemeValue_p param){
-        return collector(cons(param, rest));},check_proc);
+        return collector(cons(param, rest));
+    },check_proc);
 
     auto result_first = eval(first, env, eval_tracker);
 
