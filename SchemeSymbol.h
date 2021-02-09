@@ -22,4 +22,6 @@ private:
     std::string m_symbol;
 };
 
+SchemeValue_p symbol(std::string str);
+
 #endif

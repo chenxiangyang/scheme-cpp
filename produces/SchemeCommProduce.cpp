@@ -192,7 +192,9 @@ SchemeValue_p produce_call_with_current_context(SchemeValue_p param, Frame_p env
     }
     catch(ContinuationException& e)
     {
-        return e.return_value();
+        if(e.continuation_value() == contin)
+            return e.return_value();
+        throw e;
     }
 }
 
@@ -201,7 +203,13 @@ SchemeValue_p produce_set_change(SchemeValue_p param, Frame_p env, Frame_p func_
     if(!param->is_list() || param->toType<SchemePair*>()->count()!=2)
         throw std::runtime_error(std::string()+"invalid set! param:"+param->to_string());
     auto name = car(param);
-    auto ctx = eval(car(cdr(param)),env,tracker);
+
+    auto collect = tracker.m_collect_proc;
+    auto this_tracker = Tracker([name,collect](SchemeValue_p param){
+            return collect(cons(symbol("set!"),
+                                cons(name, cons(param,nil()))));},tracker.m_check_proc);
+
+    auto ctx = eval(car(cdr(param)),env,this_tracker);
 
     if(!name->is_symbol())
         throw std::runtime_error(std::string()+"set! param name is not symbol:"+name->to_string());

@@ -17,10 +17,11 @@ SchemeValue_p SchemeDefine::apply(SchemeValue_p params, Frame_p env, Tracker &tr
     if(first->is_symbol())
     {
         auto symbol = first->toType<SchemeSymbol*>();
-        SchemeValue_p result = nil();
         Tracker new_tracker([first,collect](SchemeValue_p param){
             return collect(cons(std::make_shared<SchemeSymbol>("define"), cons(first,cons(param,nil()))));
         }, tracker.m_check_proc);
+
+        SchemeValue_p result = nil();
         result = eval(rest->toType<SchemePair*>()->car(), env, new_tracker);
         env->set_env(symbol->value(), result);
     }

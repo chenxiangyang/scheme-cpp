@@ -30,7 +30,7 @@ SchemeValue_p SchemeLambdaExpr::apply(SchemeValue_p params, Frame_p env, Tracker
 
     if(!params->is_list() && !params->is_nil())
         throw std::runtime_error(std::string("params is not list"));
-    auto check_proc = check_if_in_continuation_default;
+    auto check_proc = tracker.m_check_proc;
 
     while(1)
     {

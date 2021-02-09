@@ -11,7 +11,7 @@ public:
         SchemeProduce(env),
         m_holder_place(holder_place),
         m_proc(proc){
-        //std::cout<<"SchemeContinuation:"<<m_proc->to_string()<<std::endl;
+        std::cout<<"SchemeContinuation:"<<m_proc->to_string()<<std::endl;
     }
     bool is_continuation() override{return true;}
     std::string to_string() override;
