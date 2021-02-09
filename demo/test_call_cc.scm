@@ -79,3 +79,43 @@
 (display "test ##4")
 (display (bb 4))
 #f
+
+
+(display "test 5")
+(define (func5 x)
+  (begin
+    (display "enter func5")
+    (display (call/cc
+     (lambda (return)
+       (+ 1 2 3 4
+          (call/cc
+           (lambda (return1)
+             (begin
+               (display "enter return1")
+               (return1 10)
+               (display "leave return1")
+               (20))))
+          5 x))))
+    (display "leave func5")))
+
+(func5 5)
+
+
+(display "test 6")
+(define (func6 x)
+  (begin
+    (display "enter func6")
+    (display (call/cc
+     (lambda (return)
+       (+ 1 2 3 4
+          (call/cc
+           (lambda (return1)
+             (begin
+               (display "enter return1")
+               (return 10)
+               (display "leave return1")
+               (20))))
+          5 x))))
+    (display "leave func6")))
+
+(func6 5)
